@@ -4,6 +4,7 @@ from .models import Pet, Photo
 
 
 class PhotoSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
 
     def to_representation(self, instance):
         return {
@@ -13,10 +14,13 @@ class PhotoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Photo
-        fields = ('id', 'pet','url','image')
+        fields = ('id', 'pet', 'url', 'image')
 
     def create(self, validated_data):
         return Photo.objects.create(**validated_data)
+
+    def get_url(self, obj):
+        return "hfbfhf"
 
 
 def get_photos(obj):
@@ -39,4 +43,4 @@ class PetSerializer(serializers.ModelSerializer):
         return g.data
 
     def get_created_at(self, obj):
-        return obj.created_at.strftime("%Y-%d-%mT%H:%M:%S")
+        return obj.created_at.strftime("%Y-%m-%dT%H:%M:%S")

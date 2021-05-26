@@ -9,7 +9,7 @@ from django import forms
 from urllib.parse import parse_qs
 from django.db.models import Q
 from accountingForCatsAndDoqsAPI.apiKeyPermission import Check_API_KEY_Auth
-from accountingForCatsAndDogs.settings import BASE_DIR, DATABASES
+from accountingForCatsAndDogs.settings import BASE_DIR, DATABASES, MEDIA_ROOT
 from .models import Photo
 from rest_framework.parsers import FileUploadParser
 from django.http import HttpResponse
@@ -45,15 +45,26 @@ class PetView(APIView):
         offset = 0
         has_photos = None
         if "limit" in query_string:
+            if isinstance(query_string["limit"], int):
+                return HttpResponseBadRequest("limit mast be int")
             limit = int(query_string["limit"])
+            if limit < 0:
+                return HttpResponseBadRequest("limit mast be non-negative")
         if "offset" in query_string:
+            if isinstance(query_string["offset"], int):
+                return HttpResponseBadRequest("offset mast be int")
             offset = int(query_string["offset"])
+            if offset < 0:
+                return HttpResponseBadRequest("offset mast be non-negative")
         if "has_photos" in query_string:
             if query_string["has_photos"] == "True" or query_string["has_photos"] == "true":
                 has_photos = True
-            else:
+            elif query_string["has_photos"] == "False" or query_string["has_photos"] == "false":
                 has_photos = False
-        return Response({"count": len(Pet.objects.all()), "items": self.get_pets(has_photos = has_photos, offset=offset,limit = limit)})
+            else:
+                return HttpResponseBadRequest("has_photos mast be bool")
+        return Response({"count": len(Pet.objects.all()),
+                         "items": self.get_pets(has_photos=has_photos, offset=offset, limit=limit)})
 
     def post(self, request):
         pet = request.data
@@ -61,6 +72,8 @@ class PetView(APIView):
         if serializer.is_valid(raise_exception=True):
             if request.data["type"] != "cat" and request.data["type"] != "dog":
                 return HttpResponseBadRequest("Type can only be a cat or a dog")
+            if request.data["age"] < 0:
+                return HttpResponseBadRequest("Age must be non-negative")
             serializer.save()
         return Response(serializer.data)
 
@@ -84,21 +97,14 @@ class PetView(APIView):
         return Response({"deleted": deleted, "errors": errors})
 
 
-class ImageUploadParser(FileUploadParser):
-    media_type = 'image/*'
-
-
 class PhotoView(APIView):
     permission_classes = (Check_API_KEY_Auth,)
-
-    parser_class = (FileUploadParser, ImageUploadParser,)
 
     def post(self, request, pk):
         if 'file' not in request.data:
             raise ParseError("Empty content")
-        dat = {"pet": pk, "image": request.data['file'],
-               "url": "http://" + str(BASE_DIR) + "/photos/" + request.data['file'].name}
-        serializer = PhotoSerializer(data=dat)
+        data = {"pet": pk, "image": request.data['file']}
+        serializer = PhotoSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
-            photo_saved = serializer.save()
-        return Response({"id": photo_saved.id, "url": photo_saved.url})
+            serializer.save()
+        return Response(serializer.data)
