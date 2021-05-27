@@ -9,7 +9,7 @@ class PhotoSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         return {
             'id': instance.id,
-            'url': instance.url
+            'url': instance.image.url
         }
 
     class Meta:
@@ -20,7 +20,7 @@ class PhotoSerializer(serializers.ModelSerializer):
         return Photo.objects.create(**validated_data)
 
     def get_url(self, obj):
-        return "hfbfhf"
+        return obj.image.url
 
 
 def get_photos(obj):

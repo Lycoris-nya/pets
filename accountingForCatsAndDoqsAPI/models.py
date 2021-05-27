@@ -18,4 +18,3 @@ class Photo(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     image = models.ImageField(upload_to='photos/')
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE)
-    url = models.CharField(max_length=255)
