@@ -40,3 +40,12 @@ class PetSerializer(serializers.ModelSerializer):
 
     def get_created_at(self, obj):
         return obj.created_at.strftime("%Y-%m-%dT%H:%M:%S")
+
+    def validate_type(self, value):
+        if value != "cat" and value != "dog":
+            raise serializers.ValidationError("Type can only be a cat or a dog")
+        return value
+    def validate_age(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Age must be non-negative")
+        return value

@@ -59,31 +59,23 @@ class PetView(APIView):
         pet = request.data
         serializer = PetSerializer(data=pet)
         if serializer.is_valid(raise_exception=True):
-            if request.data["type"] != "cat" and request.data["type"] != "dog":
-                return HttpResponseBadRequest("Type can only be a cat or a dog")
-            if request.data["age"] < 0:
-                return HttpResponseBadRequest("Age must be non-negative")
             serializer.save()
         return Response(serializer.data)
 
     def delete(self, request):
-        deleted = 0
-        deleted_pet_id = []
         errors = []
         if 'ids' not in request.data:
             raise ParseError("Empty content")
         pets = Pet.objects.all().filter(id__in=request.data["ids"])
-        for pet in pets:
-            deleted += 1
-            for photo in pet.photo_set.all():
-                photo.image.delete(save=True)
-                photo.delete()
-            deleted_pet_id.append(pet.id)
-            pet.delete()
+        deleted_pet_id = [str(pet.id) for pet in pets]
+        deleted = pets.delete()
+        deleted_count = 0
+        if deleted[0] != 0:
+            deleted_count = deleted[1]["accountingForCatsAndDoqsAPI.Pet"]
         for pet_id in request.data["ids"]:
             if pet_id not in deleted_pet_id:
                 errors.append({"id": pet_id, "error": "Pet with the matching ID was not found."})
-        return Response({"deleted": deleted, "errors": errors})
+        return Response({"deleted": deleted_count, "errors": errors})
 
 
 class PhotoView(APIView):

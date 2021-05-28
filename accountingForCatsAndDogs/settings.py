@@ -132,7 +132,8 @@ STATIC_URL = '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'accountingForCatsAndDoqsAPI.exceptions_handler.custom_exception_handler'
+    'EXCEPTION_HANDLER': 'accountingForCatsAndDoqsAPI.exceptions_handler.custom_exception_handler',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
 }
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 API_KEY_SECRET = "kekv"
