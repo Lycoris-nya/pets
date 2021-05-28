@@ -335,3 +335,4 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/pycharm,python,django
 /photos/*
 .idea/*
+/data2/
