@@ -1,19 +1,8 @@
 from django.http import QueryDict, HttpResponseBadRequest
-from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.exceptions import ParseError, NotAuthenticated
 from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import ListModelMixin
-from django import forms
-from urllib.parse import parse_qs
-from django.db.models import Q
 from accountingForCatsAndDoqsAPI.apiKeyPermission import Check_API_KEY_Auth
-from accountingForCatsAndDogs.settings import BASE_DIR, DATABASES, MEDIA_ROOT
-from .models import Photo
-from rest_framework.parsers import FileUploadParser
-from django.http import HttpResponse
-
 from .models import Pet
 from .serializers import PetSerializer, PhotoSerializer
 
@@ -49,7 +38,7 @@ class PetView(APIView):
                 return HttpResponseBadRequest("limit mast be int")
             limit = int(query_string["limit"])
             if limit < 0:
-                return HttpResponseBadRequest("limit mast be non-negative")
+                return HttpResponseBadRequest("limit must be non-negative")
         if "offset" in query_string:
             if isinstance(query_string["offset"], int):
                 return HttpResponseBadRequest("offset mast be int")

@@ -23,10 +23,6 @@ class PhotoSerializer(serializers.ModelSerializer):
         return obj.image.url
 
 
-def get_photos(obj):
-    return [PhotoSerializer(obj.photo_set, many=True)]
-
-
 class PetSerializer(serializers.ModelSerializer):
     photos = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
