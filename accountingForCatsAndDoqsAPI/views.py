@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from accountingForCatsAndDoqsAPI.apiKeyPermission import Check_API_KEY_Auth
 from .models import Pet
 from .serializers import PetSerializer, PhotoSerializer
+from .query_string_parser import parse_query_string
 
 
 class PetView(APIView):
@@ -29,31 +30,12 @@ class PetView(APIView):
         return PetSerializer(pets[:limit], many=True).data
 
     def get(self, request):
-        query_string = QueryDict(request.META["QUERY_STRING"])
-        limit = 20
-        offset = 0
-        has_photos = None
-        if "limit" in query_string:
-            if isinstance(query_string["limit"], int):
-                return HttpResponseBadRequest("limit mast be int")
-            limit = int(query_string["limit"])
-            if limit < 0:
-                return HttpResponseBadRequest("limit must be non-negative")
-        if "offset" in query_string:
-            if isinstance(query_string["offset"], int):
-                return HttpResponseBadRequest("offset mast be int")
-            offset = int(query_string["offset"])
-            if offset < 0:
-                return HttpResponseBadRequest("offset mast be non-negative")
-        if "has_photos" in query_string:
-            if query_string["has_photos"] == "True" or query_string["has_photos"] == "true":
-                has_photos = True
-            elif query_string["has_photos"] == "False" or query_string["has_photos"] == "false":
-                has_photos = False
-            else:
-                return HttpResponseBadRequest("has_photos mast be bool")
+        query_string = parse_query_string(QueryDict(request.META["QUERY_STRING"]))
+        if 'error' in query_string:
+            return query_string["error"]
         return Response({"count": len(Pet.objects.all()),
-                         "items": self.get_pets(has_photos=has_photos, offset=offset, limit=limit)})
+                         "items": self.get_pets(has_photos=query_string["has_photos"], offset=query_string["offset"],
+                                                limit=query_string["limit"])})
 
     def post(self, request):
         pet = request.data
