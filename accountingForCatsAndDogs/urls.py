@@ -23,5 +23,5 @@ urlpatterns = [
     path('', include('accountingForCatsAndDoqsAPI.urls')),
 ]
 
-if settings.DEBUG: # new
+if settings.DEBUG:  # new
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

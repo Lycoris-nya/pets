@@ -26,17 +26,21 @@ def str_bool(string):
 class Command(BaseCommand):
     help = "The command uploads the list of pets to stdout in json format."
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def add_arguments(self, parser):
-        parser.add_argument('has_photos',
-                            nargs='?',
-                            default=None,
-                            type=str_bool,
-                            help="Allows you to unload pets with or without photos")
+        parser.add_argument('-y', '--with_photos',
+                            action='store_true',
+                            help="Get pets with photos")
+        parser.add_argument('-n', '--no_with_photos',
+                            action='store_true',
+                            help="Get pets with no photos")
 
     def handle(self, *args, **options):
-        return json.dumps({"pets": PetView.get_pets(None, has_photos=options['has_photos'])},
+        has_photos = None
+        if options["with_photos"]:
+            has_photos = True
+        elif options["no_with_photos"]:
+            has_photos = False
+
+        return json.dumps({"pets": PetView.get_pets(None, has_photos=has_photos)},
                           cls=UUIDEncoder,
                           indent=3)
