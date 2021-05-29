@@ -12,9 +12,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-MEDIA_URL = 'https://example.com/'
+MEDIA_URL = os.environ.get("HOST_URL")
 MEDIA_ROOT = BASE_DIR / ''
 
 # Quick-start development settings - unsuitable for production
@@ -26,7 +27,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = ["127.0.0.1", "44052f532810.ngrok.io"]
+ALLOWED_HOSTS = [os.environ.get("DJANGO_ALLOWED_HOSTS")]
 
 # Application definition
 
@@ -76,12 +77,12 @@ WSGI_APPLICATION = 'accountingForCatsAndDogs.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
-        'PORT': '5432',
+        'ENGINE': os.environ.get("SQL_ENGINE"),
+        'NAME': os.environ.get("SQL_DATABASE"),
+        'USER': os.environ.get("SQL_USER"),
+        'PASSWORD': "postgres",
+        'HOST': os.environ.get("SQL_HOST"),
+        'PORT': os.environ.get("SQL_PORT"),
     }
 }
 
@@ -121,7 +122,9 @@ DATE_INPUT_FORMATS = ['%Y-%d-%mT%H:%M:%S']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/photos/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "photos"),)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -129,4 +132,4 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'accountingForCatsAndDoqsAPI.exceptions_handler.custom_exception_handler',
 }
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-API_KEY_SECRET = "kekv"
+API_KEY_SECRET = os.environ.get("API_SECRET_KEY")
