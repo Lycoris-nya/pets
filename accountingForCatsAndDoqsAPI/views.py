@@ -2,7 +2,7 @@ from django.http import QueryDict, HttpResponseBadRequest
 from rest_framework.response import Response
 from rest_framework.exceptions import ParseError, NotAuthenticated
 from rest_framework.views import APIView
-from accountingForCatsAndDoqsAPI.apiKeyPermission import Check_API_KEY_Auth
+from accountingForCatsAndDoqsAPI.api_key_permission import Check_API_KEY_Auth
 from .models import Pet
 from .serializers import PetSerializer, PhotoSerializer
 from .query_string_parser import parse_query_string
