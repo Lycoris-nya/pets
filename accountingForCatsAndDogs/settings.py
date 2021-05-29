@@ -22,12 +22,12 @@ MEDIA_ROOT = BASE_DIR / ''
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", default="123")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="127.0.0.1").split(" ")
 
 # Application definition
 
@@ -124,7 +124,7 @@ DATE_INPUT_FORMATS = ['%Y-%d-%mT%H:%M:%S']
 
 STATIC_URL = '/photos/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "photos"),)
+    os.path.join(BASE_DIR, "photos"), '/static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
