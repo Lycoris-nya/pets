@@ -336,3 +336,4 @@ fabric.properties
 /photos/*
 .idea/*
 /data2/
+/accountingForCatsAndDoqsAPI/migrations/
